@@ -23,6 +23,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.prepare_env.outputs.NODE_ENV }}
     steps:
       - name: Checkout your repository
         uses: actions/checkout@v4
@@ -41,23 +43,57 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Prepare environment variable
+        id: prepare_env
+        run: echo "NODE_ENV=${{ github.event.inputs.environment || 'staging' }}" >> $GITHUB_OUTPUT
+
       - name: Build Astro site
         env:
-          NODE_ENV: ${{ github.event.inputs.environment }}
+          NODE_ENV: ${{ github.event.inputs.environment || 'staging' }}
         run: pnpm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: dist-artifact
           path: ./dist
 
-  deploy:
+  deploy_to_gh_pages:
     needs: build
+    if: needs.build.outputs.environment == 'staging'
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: staging
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifact
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: dist-artifact
+
+  deploy_to_ftp:
+    needs: build
+    if: needs.build.outputs.environment == 'production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifact
+          path: ./dist
+
+      - name: Deploy to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: public_html/
+          protocol: ftps
