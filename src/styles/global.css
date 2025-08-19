@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Sora Variable', sans-serif;;
-  --font-funnel: 'Funnel Display Variable', system-ui
+  /* theme fonts */
+  --font-sans: 'Sora Variable', sans-serif;
+  --font-funnel: 'Funnel Display Variable', system-ui;
+  
+  /* theme colors */
+  --color-dark: oklch(0.27 0 0);
+  --color-purple: oklch(0.56 0.18 290);
+  --color-lemon: oklch(0.88 0.11 104);
+  --color-cream: oklch(0.98 0.01 0);
 }
 @utility container {
   margin: 0 auto;
