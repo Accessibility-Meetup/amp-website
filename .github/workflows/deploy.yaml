@@ -52,10 +52,17 @@ jobs:
           NODE_ENV: ${{ github.event.inputs.environment || 'staging' }}
         run: pnpm run build
 
-      - name: Upload build artifact
+      - name: Upload artifact for GitHub Pages
+        if: steps.prepare_env.outputs.NODE_ENV == 'staging'
+        uses: actions/upload-pages-artifact@v3
+        with:
+         path: ./dist
+
+      - name: Upload artifact for FTP
+        if: steps.prepare_env.outputs.NODE_ENV == 'production'
         uses: actions/upload-artifact@v4
         with:
-          name: dist-artifact
+          name: dist-artifact-ftp
           path: ./dist
 
   deploy_to_gh_pages:
@@ -66,16 +73,9 @@ jobs:
       name: staging
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-artifact
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: dist-artifact
 
   deploy_to_ftp:
     needs: build
