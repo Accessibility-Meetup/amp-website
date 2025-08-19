@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Sora Variable', sans-serif;;
+  --font-funnel: 'Funnel Display Variable', system-ui
+}
 @utility container {
   margin: 0 auto;
   padding: 0 1rem;	
