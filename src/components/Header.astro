@@ -1,24 +1,16 @@
 ---
-import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import HeaderLogo from './HeaderLogo.astro';
 ---
 
-<div class="flex flex-row justify-between px-8">
-  <header>
-    <h2><a href="/">{SITE_TITLE}</a></h2>
+<div class="flex flex-row justify-between px-8 container items-center">
+  <header class="py-3">
+    <HeaderLogo />
   </header>
-  <nav>
-    <ul class="flex flex-grow gap-2">
-      <HeaderLink href="/">Home</HeaderLink>
+  <nav aria-label="Main">
+    <ul class="flex flex-grow gap-2 items-center">
       <HeaderLink href="/blog">Blog</HeaderLink>
-      <HeaderLink href="/about">About</HeaderLink>
+      <HeaderLink href="/about">O nas</HeaderLink>
     </ul>
-    </div>
-    <div class="social-links">
-      <a href="https://m.webtoo.ls/@astro" target="_blank">
-        <span class="sr-only">Follow Astro on Mastodon</span>
-        
-      </a>
-    </div>
   </nav>
 </div>
